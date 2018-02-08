@@ -1,0 +1,84 @@
+---
+title: Commenly-used Script
+date: '2018-02-06'
+---
+
+
+<div id="TOC">
+<ul>
+<li><a href="#missing-value">Missing Value</a></li>
+<li><a href="#unique">Unique</a></li>
+<li><a href="#others">Others</a></li>
+</ul>
+</div>
+
+<p>I often use R, Python, SAS, SQL, and Bash in different tasks. To make the transfer easier, a list of the commonly-used script was built for a quick reference.</p>
+<p>At the beginning, a data set with missing and duplicated values were simulated. This data set was also saved to the feather format, which can be consumed by Python, too.</p>
+<pre class="r"><code>set.seed(1)
+N &lt;- 1000
+x1 &lt;- sample(c(&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;), N, replace = TRUE)
+x2 &lt;- sample(c(&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;), N, replace = TRUE)
+x3 &lt;- sample(c(&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;), N, replace = TRUE)
+x4 &lt;- sample(1:10)
+x5 &lt;- sample(1:10)
+df &lt;- data.frame(x1, x2, x3, x4, x5)
+
+for(i in 1:ncol(df)) { # Some missings
+  df[ , i][sample(1:nrow(df), sample(10:50))] &lt;- NA
+}
+
+library(feather)
+path &lt;- &quot;my_data.feather&quot;
+write_feather(df, path)</code></pre>
+<div id="missing-value" class="section level2">
+<h2>Missing Value</h2>
+<div id="r" class="section level3">
+<h3>R</h3>
+<pre class="r"><code>colSums(is.na(df))</code></pre>
+<pre><code>## x1 x2 x3 x4 x5 
+## 11 26 45 47 35</code></pre>
+</div>
+<div id="python" class="section level3">
+<h3>Python</h3>
+<pre class="python"><code>import feather
+import pandas as pd
+path = &#39;my_data.feather&#39;
+DF = feather.read_dataframe(path)
+print(DF.isnull().sum())</code></pre>
+<pre><code>## x1    11
+## x2    26
+## x3    45
+## x4    47
+## x5    35
+## dtype: int64</code></pre>
+</div>
+</div>
+<div id="unique" class="section level2">
+<h2>Unique</h2>
+<div id="r-1" class="section level3">
+<h3>R</h3>
+<pre class="r"><code>df &lt;- iris
+
+colnames(df)</code></pre>
+<pre><code>## [1] &quot;Sepal.Length&quot; &quot;Sepal.Width&quot;  &quot;Petal.Length&quot; &quot;Petal.Width&quot; 
+## [5] &quot;Species&quot;</code></pre>
+<pre class="r"><code>unique(df$Species)</code></pre>
+<pre><code>## [1] setosa     versicolor virginica 
+## Levels: setosa versicolor virginica</code></pre>
+<pre class="r"><code>df %&gt;% distinct(Species)</code></pre>
+<pre><code>##      Species
+## 1     setosa
+## 2 versicolor
+## 3  virginica</code></pre>
+<pre class="r"><code>df %&gt;% distinct() %&gt;% count()</code></pre>
+<pre><code>## # A tibble: 1 x 1
+##       n
+##   &lt;int&gt;
+## 1   149</code></pre>
+<pre class="r"><code>dup &lt;- df[duplicated(df),]
+df &lt;- df %&gt;% distinct()</code></pre>
+</div>
+</div>
+<div id="others" class="section level2">
+<h2>Others</h2>
+</div>

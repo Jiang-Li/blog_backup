@@ -1,0 +1,23 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1518065631099.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1248036464",
+    "id" : "71550DC7",
+    "lastKnownWriteTime" : 1518067642,
+    "last_content_update" : 1518067642739,
+    "path" : "~/OneDrive/Documents/blog/content/post/2018-02-06-script.Rmd",
+    "project_path" : "content/post/2018-02-06-script.Rmd",
+    "properties" : {
+        "cursorPosition" : "18,12",
+        "last_setup_crc32" : "1FFAABB757a65d1b",
+        "scrollLine" : "13"
+    },
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}

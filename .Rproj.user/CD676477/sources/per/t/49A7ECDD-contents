@@ -1,0 +1,81 @@
+---
+title: Commenly-used Script
+date: '2018-02-06'
+---
+
+```{r setup, echo = FALSE, warning = FALSE, message = FALSE}
+library(knitr)
+library(tidyverse)
+library(feather)
+#opts_chunk$set(engine.path = '/Library/Frameworks/Python.framework/Versions/3.6/bin/python3')
+```
+
+I often use R, Python, SAS, SQL, and Bash in different
+tasks. To make the transfer easier, a list of the commonly-used
+script was built for a quick reference.
+
+At the beginning, a data set with missing and duplicated values were simulated. 
+This data set was also saved to the feather format, which can be consumed by
+Python, too.
+```{r}
+set.seed(1)
+N <- 1000
+x1 <- sample(c("A", "B", "C", "D"), N, replace = TRUE)
+x2 <- sample(c("A", "B", "C", "D"), N, replace = TRUE)
+x3 <- sample(c("A", "B", "C", "D"), N, replace = TRUE)
+x4 <- sample(1:10)
+x5 <- sample(1:10)
+df <- data.frame(x1, x2, x3, x4, x5)
+
+for(i in 1:ncol(df)) { # Some missings
+  df[ , i][sample(1:nrow(df), sample(10:50))] <- NA
+}
+
+library(feather)
+path <- "my_data.feather"
+write_feather(df, path)
+```
+
+
+## Missing Value
+
+### R
+
+```{r}
+colSums(is.na(df))
+
+```
+
+### Python
+
+
+```{python}
+import feather
+import pandas as pd
+path = 'my_data.feather'
+DF = feather.read_dataframe(path)
+
+print(DF.isnull().sum())
+
+```
+
+## Unique
+
+### R
+
+```{r}
+df <- iris
+
+colnames(df)
+
+unique(df$Species)
+df %>% distinct(Species)
+
+df %>% distinct() %>% count()
+
+dup <- df[duplicated(df),]
+df <- df %>% distinct()
+
+```
+
+## Others

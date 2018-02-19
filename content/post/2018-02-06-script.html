@@ -1,84 +1,199 @@
 ---
 title: Commenly-used Script
+author: ''
 date: '2018-02-06'
 ---
 
 
 <div id="TOC">
 <ul>
+<li><a href="#row-count-column-names-and-data-types">row count, column names and data types</a></li>
 <li><a href="#missing-value">Missing Value</a></li>
 <li><a href="#unique">Unique</a></li>
-<li><a href="#others">Others</a></li>
+<li><a href="#frequency">Frequency</a></li>
+<li><a href="#aggregation">Aggregation</a></li>
+<li><a href="#merge">Merge</a></li>
+<li><a href="#reshape">Reshape</a></li>
 </ul>
 </div>
 
-<p>I often use R, Python, SAS, SQL, and Bash in different tasks. To make the transfer easier, a list of the commonly-used script was built for a quick reference.</p>
+<p>I often use R, Python, SAS, SQL, and Bash in different tasks at the same time. To make the transfer easier, here a list of the commonly-used script was built for a quick reference.</p>
 <p>At the beginning, a data set with missing and duplicated values were simulated. This data set was also saved to the feather format, which can be consumed by Python, too.</p>
 <pre class="r"><code>set.seed(1)
 N &lt;- 1000
-x1 &lt;- sample(c(&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;), N, replace = TRUE)
-x2 &lt;- sample(c(&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;), N, replace = TRUE)
-x3 &lt;- sample(c(&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;), N, replace = TRUE)
-x4 &lt;- sample(1:10)
-x5 &lt;- sample(1:10)
-df &lt;- data.frame(x1, x2, x3, x4, x5)
+df &lt;- tibble(
+dimension1 = sample(c(&quot;I&quot;, &quot;II&quot;, &quot;III&quot;), N, replace = T),
+dimension2 = sample(c(&quot;A&quot;, &quot;B&quot;, &quot;C&quot;), N, replace = T),
+measure1 = sample(1:10, N, replace = T),
+measure2 = sample(1:10, N, replace = T)
+)
 
-for(i in 1:ncol(df)) { # Some missings
-  df[ , i][sample(1:nrow(df), sample(10:50))] &lt;- NA
-}
+df &lt;- as_tibble(lapply(df, function(r) r[sample(c(TRUE, NA), prob = c(0.85, 0.15), size = length(r), replace = TRUE) ]))
 
 library(feather)
 path &lt;- &quot;my_data.feather&quot;
 write_feather(df, path)</code></pre>
-<div id="missing-value" class="section level2">
-<h2>Missing Value</h2>
+<div id="row-count-column-names-and-data-types" class="section level2">
+<h2>row count, column names and data types</h2>
 <div id="r" class="section level3">
 <h3>R</h3>
-<pre class="r"><code>colSums(is.na(df))</code></pre>
-<pre><code>## x1 x2 x3 x4 x5 
-## 11 26 45 47 35</code></pre>
+<pre class="r"><code>nrow(df)</code></pre>
+<pre><code>## [1] 1000</code></pre>
+<pre class="r"><code>df %&gt;% count()</code></pre>
+<pre><code>## # A tibble: 1 x 1
+##       n
+##   &lt;int&gt;
+## 1  1000</code></pre>
+<pre class="r"><code>names(df)</code></pre>
+<pre><code>## [1] &quot;dimension1&quot; &quot;dimension2&quot; &quot;measure1&quot;   &quot;measure2&quot;</code></pre>
+<pre class="r"><code>lapply(df, class)</code></pre>
+<pre><code>## $dimension1
+## [1] &quot;character&quot;
+## 
+## $dimension2
+## [1] &quot;character&quot;
+## 
+## $measure1
+## [1] &quot;integer&quot;
+## 
+## $measure2
+## [1] &quot;integer&quot;</code></pre>
 </div>
 <div id="python" class="section level3">
 <h3>Python</h3>
 <pre class="python"><code>import feather
+path = &#39;my_data.feather&#39;
+df = feather.read_dataframe(path)
+print(df.shape[0])</code></pre>
+<pre><code>## 1000</code></pre>
+<pre class="python"><code>print(list(df))</code></pre>
+<pre><code>## [&#39;dimension1&#39;, &#39;dimension2&#39;, &#39;measure1&#39;, &#39;measure2&#39;]</code></pre>
+<pre class="python"><code>print(df.dtypes)</code></pre>
+<pre><code>## dimension1     object
+## dimension2     object
+## measure1      float64
+## measure2      float64
+## dtype: object</code></pre>
+</div>
+<div id="sas" class="section level3">
+<h3>SAS</h3>
+<pre><code>PROC CONTENTS DATA=df;
+RUN;</code></pre>
+</div>
+<div id="sql" class="section level3">
+<h3>SQL</h3>
+<pre class="sql"><code>SELECT COUNT(*) FROM df
+
+SELECT TOP 0 * FROM df
+  
+SELECT * FROM INFORMATION_SCHEMA.COLUMNS  </code></pre>
+</div>
+<div id="bash" class="section level3">
+<h3>Bash</h3>
+<pre class="bash"><code>wc -l &lt; filename
+
+head -1 filename</code></pre>
+</div>
+</div>
+<div id="missing-value" class="section level2">
+<h2>Missing Value</h2>
+<ol style="list-style-type: decimal">
+<li>Count by column</li>
+<li>Drop</li>
+</ol>
+<ul>
+<li>row with missing values</li>
+<li>row with all missing values</li>
+<li>column with all missing values</li>
+</ul>
+<ol start="3" style="list-style-type: decimal">
+<li>Fill</li>
+</ol>
+<ul>
+<li>data frame</li>
+<li>column</li>
+</ul>
+<div id="r-1" class="section level3">
+<h3>R</h3>
+<pre class="r"><code>colSums(is.na(df))</code></pre>
+<pre><code>## dimension1 dimension2   measure1   measure2 
+##        173        153        169        147</code></pre>
+<pre class="r"><code>no_missing &lt;- na.omit(df)
+colSums(is.na(no_missing))</code></pre>
+<pre><code>## dimension1 dimension2   measure1   measure2 
+##          0          0          0          0</code></pre>
+<pre class="r"><code>no_all_row_missing &lt;- df[rowSums(is.na(df)) &lt; ncol(df), ]
+no_all_col_missing &lt;- df &lt;- df[,colSums(is.na(df)) &lt; nrow(df)]</code></pre>
+<pre class="r"><code>fill_missing &lt;- df %&gt;%
+  replace(., is.na(.), 0)
+
+fill_col_missing &lt;- df %&gt;%
+  replace_na(list(dimension1 = &quot;Unknown&quot;, measure1 = 0))</code></pre>
+</div>
+<div id="python-1" class="section level3">
+<h3>Python</h3>
+<pre class="python"><code>import feather
 import pandas as pd
 path = &#39;my_data.feather&#39;
-DF = feather.read_dataframe(path)
-print(DF.isnull().sum())</code></pre>
-<pre><code>## x1    11
-## x2    26
-## x3    45
-## x4    47
-## x5    35
+df = feather.read_dataframe(path)
+print(df.isnull().sum())</code></pre>
+<pre><code>## dimension1    173
+## dimension2    153
+## measure1      169
+## measure2      147
 ## dtype: int64</code></pre>
+<pre class="python"><code>no_missing = df.dropna()
+no_all_row_missing = df.dropna(how=&quot;all&quot;)
+no_all_col_missing = df.dropna(axis=1, how=&#39;all&#39;)</code></pre>
 </div>
 </div>
 <div id="unique" class="section level2">
 <h2>Unique</h2>
-<div id="r-1" class="section level3">
+<ol style="list-style-type: decimal">
+<li>Unique row &amp; drop the duplicate</li>
+<li>Unique per variables &amp; drop the duplicate</li>
+</ol>
+<div id="r-2" class="section level3">
 <h3>R</h3>
-<pre class="r"><code>df &lt;- iris
-
-colnames(df)</code></pre>
-<pre><code>## [1] &quot;Sepal.Length&quot; &quot;Sepal.Width&quot;  &quot;Petal.Length&quot; &quot;Petal.Width&quot; 
-## [5] &quot;Species&quot;</code></pre>
+<pre class="r"><code>colnames(df)</code></pre>
+<pre><code>## [1] &quot;dimension1&quot; &quot;dimension2&quot; &quot;measure1&quot;   &quot;measure2&quot;</code></pre>
 <pre class="r"><code>unique(df$Species)</code></pre>
-<pre><code>## [1] setosa     versicolor virginica 
-## Levels: setosa versicolor virginica</code></pre>
+<pre><code>## Warning: Unknown or uninitialised column: &#39;Species&#39;.</code></pre>
+<pre><code>## NULL</code></pre>
 <pre class="r"><code>df %&gt;% distinct(Species)</code></pre>
-<pre><code>##      Species
-## 1     setosa
-## 2 versicolor
-## 3  virginica</code></pre>
+<pre><code>## # A tibble: 1,000 x 4
+##    dimension1 dimension2 measure1 measure2
+##    &lt;chr&gt;      &lt;chr&gt;         &lt;int&gt;    &lt;int&gt;
+##  1 I          B                 9        9
+##  2 II         C                10        5
+##  3 II         B                 9        2
+##  4 III        &lt;NA&gt;              5        4
+##  5 &lt;NA&gt;       A                NA        9
+##  6 III        A                 1       NA
+##  7 III        B                 6        2
+##  8 II         B                 1        4
+##  9 II         C                 6        8
+## 10 I          &lt;NA&gt;              5       10
+## # ... with 990 more rows</code></pre>
 <pre class="r"><code>df %&gt;% distinct() %&gt;% count()</code></pre>
 <pre><code>## # A tibble: 1 x 1
 ##       n
 ##   &lt;int&gt;
-## 1   149</code></pre>
+## 1   747</code></pre>
 <pre class="r"><code>dup &lt;- df[duplicated(df),]
 df &lt;- df %&gt;% distinct()</code></pre>
 </div>
 </div>
-<div id="others" class="section level2">
-<h2>Others</h2>
+<div id="frequency" class="section level2">
+<h2>Frequency</h2>
+<p>one and two variables</p>
+</div>
+<div id="aggregation" class="section level2">
+<h2>Aggregation</h2>
+</div>
+<div id="merge" class="section level2">
+<h2>Merge</h2>
+</div>
+<div id="reshape" class="section level2">
+<h2>Reshape</h2>
 </div>

@@ -1,5 +1,6 @@
 ---
 title: Commenly-used Script
+author: ''
 date: '2018-02-06'
 ---
 
@@ -7,37 +8,88 @@ date: '2018-02-06'
 library(knitr)
 library(tidyverse)
 library(feather)
-#opts_chunk$set(engine.path = '/Library/Frameworks/Python.framework/Versions/3.6/bin/python3')
+# opts_chunk$set(engine.path = '/Library/Frameworks/Python.framework/Versions/3.6/bin/python3')
 ```
 
 I often use R, Python, SAS, SQL, and Bash in different
-tasks. To make the transfer easier, a list of the commonly-used
-script was built for a quick reference.
+tasks at the same time. To make the transfer easier, here a list of the commonly-used script was built for a quick reference.
 
-At the beginning, a data set with missing and duplicated values were simulated. 
-This data set was also saved to the feather format, which can be consumed by
+At the beginning, a data set with missing and duplicated values were simulated. This data set was also saved to the feather format, which can be consumed by
 Python, too.
+
 ```{r}
 set.seed(1)
 N <- 1000
-x1 <- sample(c("A", "B", "C", "D"), N, replace = TRUE)
-x2 <- sample(c("A", "B", "C", "D"), N, replace = TRUE)
-x3 <- sample(c("A", "B", "C", "D"), N, replace = TRUE)
-x4 <- sample(1:10)
-x5 <- sample(1:10)
-df <- data.frame(x1, x2, x3, x4, x5)
+df <- tibble(
+dimension1 = sample(c("I", "II", "III"), N, replace = T),
+dimension2 = sample(c("A", "B", "C"), N, replace = T),
+measure1 = sample(1:10, N, replace = T),
+measure2 = sample(1:10, N, replace = T)
+)
 
-for(i in 1:ncol(df)) { # Some missings
-  df[ , i][sample(1:nrow(df), sample(10:50))] <- NA
-}
+df <- as_tibble(lapply(df, function(r) r[sample(c(TRUE, NA), prob = c(0.85, 0.15), size = length(r), replace = TRUE) ]))
 
 library(feather)
 path <- "my_data.feather"
 write_feather(df, path)
 ```
 
+## row count, column names and data types
+
+### R
+
+```{r}
+nrow(df)
+df %>% count()
+names(df)
+lapply(df, class)
+```
+
+
+### Python
+```{python}
+import feather
+path = 'my_data.feather'
+df = feather.read_dataframe(path)
+print(df.shape[0])
+print(list(df))
+print(df.dtypes)
+```
+
+
+### SAS
+```
+PROC CONTENTS DATA=df;
+RUN;
+```
+
+### SQL
+```{sql, eval=FALSE}
+SELECT COUNT(*) FROM df
+
+SELECT TOP 0 * FROM df
+  
+SELECT * FROM INFORMATION_SCHEMA.COLUMNS  
+```
+
+### Bash
+
+```{bash, eval=FALSE}
+wc -l < filename
+
+head -1 filename
+```
 
 ## Missing Value
+
+1. Count by column
+2. Drop
+  + row with missing values
+  + row with all missing values
+  + column with all missing values
+3. Fill
+  + data frame
+  + column
 
 ### R
 
@@ -46,26 +98,45 @@ colSums(is.na(df))
 
 ```
 
-### Python
+```{r}
+no_missing <- na.omit(df)
+colSums(is.na(no_missing))
+no_all_row_missing <- df[rowSums(is.na(df)) < ncol(df), ]
+no_all_col_missing <- df <- df[,colSums(is.na(df)) < nrow(df)]
 
+```
+
+```{r}
+fill_missing <- df %>%
+  replace(., is.na(.), 0)
+
+fill_col_missing <- df %>%
+  replace_na(list(dimension1 = "Unknown", measure1 = 0))
+```
+
+### Python
 
 ```{python}
 import feather
 import pandas as pd
 path = 'my_data.feather'
-DF = feather.read_dataframe(path)
+df = feather.read_dataframe(path)
+print(df.isnull().sum())
 
-print(DF.isnull().sum())
-
+no_missing = df.dropna()
+no_all_row_missing = df.dropna(how="all")
+no_all_col_missing = df.dropna(axis=1, how='all')
 ```
 
 ## Unique
 
+1. Unique row & drop the duplicate
+2. Unique per variables & drop the duplicate
+
+
 ### R
 
 ```{r}
-df <- iris
-
 colnames(df)
 
 unique(df$Species)
@@ -78,4 +149,16 @@ df <- df %>% distinct()
 
 ```
 
-## Others
+## Frequency
+
+one and two variables
+
+
+## Aggregation
+
+
+## Merge
+
+
+## Reshape
+

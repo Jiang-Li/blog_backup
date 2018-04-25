@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Posts on Jiang&#39;s Blog</title>
+    <link>/post/</link>
+    <description>Recent content in Posts on Jiang&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 11 Feb 2018 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/post/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Know More about the Place You Live Using Census Data</title>
+      <link>/2018/02/11/know-more-about-the-place-you-live-using-census-data/</link>
+      <pubDate>Sun, 11 Feb 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/2018/02/11/know-more-about-the-place-you-live-using-census-data/</guid>
+      <description>Where the story is from How to get Census data Explore the columbus area   Where the story is from Until 2018 I have lived in Columbus Metropolitan area for more than ten years. How time flies! In these years I feel more and more vehicles on the road. No doubt this area is growing fast. However, almost all my quantitative understanding of Columbus is from Wiki…It is not bad, but what if I want to know more?</description>
+    </item>
+    
+    <item>
+      <title>Commenly-used Script</title>
+      <link>/2018/02/06/commenly-used-script/</link>
+      <pubDate>Tue, 06 Feb 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/2018/02/06/commenly-used-script/</guid>
+      <description>row count, column names and data typesMissing ValueUniqueFrequencyAggregationMergeReshapeI often use R, Python, SAS, SQL, and Bash in different tasks at the same time. To make the transfer easier, here a list of the commonly-used script was built for a quick reference.
+At the beginning, a data set with missing and duplicated values were simulated. This data set was also saved to the feather format, which can be consumed by Python, too.</description>
+    </item>
+    
+  </channel>
+</rss>

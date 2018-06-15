@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="generator" content="Hugo 0.30.2" />
+<meta name="generator" content="Hugo 0.36" />
 
 
 <title>R &#43; H2O for Insurance Rating - Jiang&#39;s Blog</title>
@@ -149,28 +149,30 @@ h2o.init(
 ## H2O is not running yet, starting it now...
 ## 
 ## Note:  In case of errors look at the following log files:
-##     /var/folders/8z/1q38pd6x0qn8_w3hqdx57vlm0000gn/T//Rtmp4l9XEG/h2o_Li_started_from_r.out
-##     /var/folders/8z/1q38pd6x0qn8_w3hqdx57vlm0000gn/T//Rtmp4l9XEG/h2o_Li_started_from_r.err
+##     C:\Users\lijia\AppData\Local\Temp\Rtmp8eJV0n/h2o_lijia_started_from_r.out
+##     C:\Users\lijia\AppData\Local\Temp\Rtmp8eJV0n/h2o_lijia_started_from_r.err
 ## 
 ## 
-## Starting H2O JVM and connecting: ........... Connection successful!
+## Starting H2O JVM and connecting:  Connection successful!
 ## 
 ## R is connected to the H2O cluster: 
-##     H2O cluster uptime:         11 seconds 287 milliseconds 
-##     H2O cluster version:        3.16.0.2 
-##     H2O cluster version age:    6 months and 15 days !!! 
-##     H2O cluster name:           H2O_started_from_R_Li_lne459 
+##     H2O cluster uptime:         5 seconds 176 milliseconds 
+##     H2O cluster timezone:       America/New_York 
+##     H2O data parsing timezone:  UTC 
+##     H2O cluster version:        3.18.0.11 
+##     H2O cluster version age:    22 days  
+##     H2O cluster name:           H2O_started_from_R_lijia_ayp330 
 ##     H2O cluster total nodes:    1 
 ##     H2O cluster total memory:   3.56 GB 
-##     H2O cluster total cores:    2 
-##     H2O cluster allowed cores:  2 
+##     H2O cluster total cores:    8 
+##     H2O cluster allowed cores:  8 
 ##     H2O cluster healthy:        TRUE 
 ##     H2O Connection ip:          localhost 
 ##     H2O Connection port:        54321 
 ##     H2O Connection proxy:       NA 
 ##     H2O Internal Security:      FALSE 
-##     H2O API Extensions:         XGBoost, Algos, AutoML, Core V3, Core V4 
-##     R Version:                  R version 3.4.4 (2018-03-15)</code></pre>
+##     H2O API Extensions:         Algos, AutoML, Core V3, Core V4 
+##     R Version:                  R version 3.5.0 (2018-04-23)</code></pre>
 <pre class="r"><code>h2o.no_progress()
 
 df &lt;- as.h2o(dataCar)</code></pre>

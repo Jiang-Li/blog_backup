@@ -7,7 +7,7 @@ date: '2018-02-06'
 ```{r setup, include=F}
 library(tidyverse)
 # library(reticulate)
-knitr::opts_chunk$set(engine.path = '/Library/Frameworks/Python.framework/Versions/3.6/bin/python3')
+# knitr::opts_chunk$set(engine.path = '/Library/Frameworks/Python.framework/Versions/3.6/bin/python3')
 ```
 
 I often use R, Python, SAS, SQL, and Bash in different

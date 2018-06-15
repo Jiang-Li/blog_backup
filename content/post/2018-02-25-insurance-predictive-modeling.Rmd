@@ -1,163 +1,11 @@
 ---
-title: "Insurance Rating Model using R"
+title: "R + H2O for Insurance Rating"
 date: '2018-02-25'
 ---
 
-Insurance rating models predict risk, which is usually represented by pure premium; i.e., the incurred loss normalized by exposure, for example, the earned car year. GLM (Generalized Linear Model) is the most popular method mostly because the results are interpretable. 
+Insurance rating models predict risk, which is usually represented by pure premium; i.e., the loss normalized by the covered time (exposure) $\frac {loss}{exposure}$. GLM (Generalized Linear Model) is the major method using in industry. Insurance data are highly imbalanced. When the data are not credible enough, pure premium is predicted by frequency $\frac {claimCount}{coveredTime}$ and severity $\frac {loss}{claimCount}$, respectively, because the frequency is more credible. 
 
-GLM SAS, R, tweedie vs freq sev
-
-<!-- Also, In the insurance modeling, the variation of response could be nonlinear and very complicated. I am curious that how how this complexity can be well caught by GLM's logarithm link function. It is well known that the tree algorithm may predict the non linear response more accurately, although the inference is not straightforward. Thus, I would like to implement the rating model by tree algorithm, and compare the restuls to -->
-<!-- GLM. -->
-
-First, some funcions are defined for model evaluaton.
-
-details...
-
-```{r message=FALSE, warning=FALSE}
-library(tidyverse)
-
-summaryFactorGLM <- function(fitModles) {
-  # Summarize the factors.
-  #
-  # Args:
-  #  fitModles: list of h2o modles: frequency and severity
-  #
-  # Returns:
-  #   A data frame of the combined factor table.  
-  
-  freqFit <- fitModles[["frequency"]]
-  sevFit <- fitModles[["severity"]]
-  
-  freqCoef <- as.data.frame(freqFit@model$coefficients_table)
-  freqCoef[freqCoef$names == "Intercept", "names"] <- "freqIntercept"
-  
-  freqCoef <- freqCoef %>% 
-    mutate(
-      frequencyFactor = exp(coefficients)
-    ) %>% 
-    select(
-      names, 
-      frequencyFactor, 
-      frequencyEstimate = coefficients
-  )
-  
-  
-  sevCoef <- sevFit@model$coefficients_table
-  
-  sevCoef[sevCoef$names == "Intercept", "names"] <- "sevIntercept"
-  
-  sevCoef <- sevCoef %>% 
-    mutate(
-      severityFactor = exp(coefficients)
-    ) %>% 
-    select(
-      names, 
-      severityFactor, 
-      severityEstimate = coefficients
-  )
-  
-  # pure premium
-  ppCoef <- full_join(freqCoef, sevCoef, by = "names")
-  
-  ppCoef$factor <- ppCoef$frequencyFactor * ppCoef$severityFactor
-
-  # assign the factor of intercept
-  ppCoef[ppCoef$names == "sevIntercept", "factor"] <- 
-    ppCoef[ppCoef$names == "sevIntercept", "severityFactor"]
-  ppCoef[ppCoef$names == "freqIntercept", "factor"] <- 
-    ppCoef[ppCoef$names == "freqIntercept", "frequencyFactor"]
-  
-  # seperate the parameter and level, remove the intercept
-  ppCoef$parameter <- sapply(strsplit(ppCoef$names, "\\."), "[", 1)
-  ppCoef$level <- sapply(strsplit(ppCoef$names, "\\."), "[", 2)
-  ppCoef$names <- NULL
-  
-  
-  return(ppCoef)
-}
-
-evaluateModel <- function(df){
-  
-  eva <- as.data.frame(df)
-  checkMAE(eva, "predict_PP", "PP")
-  checkLift(eva, "predict_PP", "PP", "exposure", "claimcst0", 10)
-  checkGini(eva, "predict_PP", "exposure", "claimcst0")
-  
-}
-
-
-checkMAE <- function(df, predictPP, PP) {
-  
-  print(paste0("The percent of predicted total pure premium: ", 
-               percent(sum(df[,predictPP], na.rm = T)/sum(df[,PP], na.rm = T))
-               ))
-   
-  print(paste0("The MAE of pure premium is: ", 
-               round(mean(abs(df[,PP] - df[,predictPP]), na.rm = T), 2)
-               ))
-}
-
-checkLift <- function(df, predictPP, PP, exposure, IL, N) {
-  predictPP <- rlang::sym(predictPP)
-  PP <- rlang::sym(PP)
-  exposure <- rlang::sym(exposure)
-  IL <- rlang::sym(IL)
-
-  liftPredPP <- df %>%
-    arrange(!!predictPP) %>% 
-    mutate(cumECY = cumsum(!!exposure)) %>% 
-    mutate(tier = cut(cumECY, breaks = N)) %>%
-    group_by(tier) %>% 
-    summarise(predictPP = dollar(sum(!!IL)/sum(!!exposure)))
-  
-  liftPP <- df %>%
-    arrange(!!PP) %>% 
-    mutate(cumECY = cumsum(!!exposure)) %>% 
-    mutate(tier = cut(cumECY, breaks = N)) %>%
-    group_by(tier) %>% 
-    summarise(realPP = dollar(sum(!!IL)/sum(!!exposure)))
-  print(bind_cols(liftPredPP, liftPP))
-}
-  
-checkGini <- function(df, PP, exposure, loss, N = 100) {
-  
-  PP <- rlang::sym(PP)
-  exposure <- rlang::sym(exposure)
-  loss <- rlang::sym(loss)
-  
-  
-  gini <- df %>%
-    arrange(!!PP) %>% 
-    mutate(cumECY = cumsum(!!exposure)/sum(!!exposure)) %>% 
-    mutate(tierECY = cut(cumECY, N, labels = seq(0, 1, 1/N)[-1] )) %>% 
-    group_by(tierECY) %>% 
-    summarise(loss = sum(!!loss)) %>% 
-    mutate(cumLoss = cumsum(loss)/sum(loss))
-
-  p <- gini %>% ggplot(aes(x = tierECY, y = cumLoss)) +
-    geom_point() +
-    xlab("Cumulative Exposure") +
-    ylab("Cumulative Loss") +
-    ggtitle("Gini") +
-    theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
-    scale_x_discrete(breaks = seq(0.01, 1, by = 5/N))
-  
-  calcGini <- gini %>%
-    mutate(height = cumLoss,
-           width = 1/N) %>%
-    select(height, width) %>% 
-    mutate(area = width * height)
-
-  GiniIndex <- (0.5 - sum(calcGini$area))/0.5
-  
-  print(paste0("Gini Index is: ", GiniIndex))  
-  print(p)
-} 
-
-```
-
-
+Here I would like to show how to predict pure premium using frequency and severity in R and H2O - transitioning away from the industry standard of SAS without any loss in model accuracy.
 
 ## Data and Methods
 
@@ -170,18 +18,23 @@ exposure  | in 0~1; probably earned car year
 numclaims | claim count
 claimcst0 | loss amount
 veh_body  | body type, a categorical variable
-veh_age   |
+veh_age   | age of vehicle
 gender    | a categorical veritable
-area      | a categorical variable; an approximation of the territory agecat    | driver age
+area      | a categorical variable; an approximation of the territory agecat    | driver age| age of driver
 
-```{r message=FALSE}
-library(scales)
+```{r setup, include=F}
 library(insuranceData)
+library(scales)
 data(dataCar)
+```
+
+```{r}
 str(dataCar)
 ```
 
-Usually the insurance data set is big. To make the the code to be easily scaled up, I used h2o in the modeling.
+## Modeling
+
+Usually the insurance data set is big. To make the the code to be easily scaled up, I used the H2O.
 
 ```{r message=FALSE, warning=FALSE}
 library(h2o)
@@ -196,55 +49,50 @@ h2o.no_progress()
 df <- as.h2o(dataCar)
 ```
 
-Then, I subset the data and build the frequency and severity as the responses variables. Please note that 93% records have the missing sevrity. 
 
 
 ```{r}
-varList <- c("veh_value",
-                "exposure",
-                "numclaims",
-                "claimcst0",
-                "veh_body",
-                "veh_age",
-                "gender",
-                "area",
-                "agecat"
-                ) 
+varList <- c(
+  "veh_value",
+  "exposure",
+  "numclaims",
+  "claimcst0",
+  "veh_body",
+  "veh_age",
+  "gender",
+  "area",
+  "agecat"
+)
 df <- df[, varList]
 df$PP <- df$claimcst0 / df$exposure
 
 # the features used in modeling
-varModel <- c("veh_value",
-              "veh_body",
-              "veh_age",
-              "gender",
-              "area",
-              "agecat") 
+varModel <- c(
+  "veh_value",
+  "veh_body",
+  "veh_age",
+  "gender",
+  "area",
+  "agecat"
+)
 
 df$frequency <- df$numclaims / df$exposure
 df$severity <- df$claimcst0 / df$numclaims
 
 print("Percentage of missing values in frequency and severity:")
-percent(h2o.sum(is.na(df$frequency))/nrow(df))
-percent(h2o.sum(is.na(df$severity))/nrow(df))
+percent(h2o.sum(is.na(df$frequency)) / nrow(df))
+percent(h2o.sum(is.na(df$severity)) / nrow(df))
 
-# split data to train and test
-parts <- h2o.splitFrame(data = df, ratios = 0.8)
-train <- parts[[1]]
-test <- parts[[2]]
-
+# The sample data set is too small. I did not split them to train and test.
 train <- df
 test <- df
 
 ```
 
 
-## GLM
-
-First, predict the frequency:
+First, frequency is modeled. Please note that the Poisson distribution requires a whole number as the response variable, so exposure, the denominator of frequency, is treated by the offset.
 ```{r}
 
-# frequency
 train$logExp <- h2o.log(train$exposure) # offset
 
 freqFit = h2o.glm(y = "numclaims",
@@ -255,19 +103,17 @@ freqFit = h2o.glm(y = "numclaims",
                   link = "log",
                   missing_values_handling = "Skip",
                   solver = "IRLSM",
-                  # nfolds = 5,
                   lambda = 0,
                   remove_collinear_columns = T,
-                  # weights_column = "dateWeight",
                   compute_p_values = T
 )
 
 ```
 
-Then, predict the severity:
+Then, severity is modeled.
 
 ```{r}
-# seveaity
+
 sevFit = h2o.glm(y = "severity",
                  x = varModel,
                  training_frame = train,
@@ -275,163 +121,86 @@ sevFit = h2o.glm(y = "severity",
                  link = "log",
                  missing_values_handling = "Skip",
                  solver = "IRLSM",
-                 # nfolds = 5,
                  lambda = 0,
                  remove_collinear_columns = T,
-                 # weights_column = "dateWeight",
                  compute_p_values = T
 )
 
 ```
 
 
-To evaluate the GLM modeling, the predicted pure premium was calculated using the frequency and severity factors. The predict function cannot be used directly because the GLM does not model the frequency directly. The frequency was predicted using claim count offset by exposure. Thus, the predicted pure premium was calculated by using the model estimate and intercept. Here, the factors $e^{estimate}$ are summarized:
+## Output
+
+The predicted pure premium was calculated using the frequency and severity factors. 
 
 ```{r}
+library(dplyr)
+
+summaryFactorGLM <- function(fitModles) {
+  # Summarize the factors.
+  #
+  # Args:
+  #  fitModles: list of h2o modles: frequency and severity
+  #
+  # Returns:
+  #   A data frame of the combined factor table.
+
+  freqFit <- fitModles[["frequency"]]
+  sevFit <- fitModles[["severity"]]
+
+  freqCoef <- as.data.frame(freqFit@model$coefficients_table)
+  freqCoef[freqCoef$names == "Intercept", "names"] <- "freqIntercept"
+
+  freqCoef <- freqCoef %>%
+    mutate(
+      frequencyFactor = exp(coefficients)
+    ) %>%
+    select(
+      names,
+      frequencyFactor,
+      frequencyEstimate = coefficients
+    )
+
+  sevCoef <- sevFit@model$coefficients_table
+
+  sevCoef[sevCoef$names == "Intercept", "names"] <- "sevIntercept"
+
+  sevCoef <- sevCoef %>%
+    mutate(
+      severityFactor = exp(coefficients)
+    ) %>%
+    select(
+      names,
+      severityFactor,
+      severityEstimate = coefficients
+    )
+
+  # pure premium
+  ppCoef <- full_join(freqCoef, sevCoef, by = "names")
+
+  ppCoef$factor <- ppCoef$frequencyFactor * ppCoef$severityFactor
+
+  # assign the factor of intercept
+  ppCoef[ppCoef$names == "sevIntercept", "factor"] <-
+    ppCoef[ppCoef$names == "sevIntercept", "severityFactor"]
+  ppCoef[ppCoef$names == "freqIntercept", "factor"] <-
+    ppCoef[ppCoef$names == "freqIntercept", "frequencyFactor"]
+
+  # seperate the parameter and level, remove the intercept
+  ppCoef$parameter <- sapply(strsplit(ppCoef$names, "\\."), "[", 1)
+  ppCoef$level <- sapply(strsplit(ppCoef$names, "\\."), "[", 2)
+  ppCoef$names <- NULL
+
+
+  return(ppCoef)
+}
+
 
 factorDF <-
   summaryFactorGLM(list(frequency = freqFit, severity = sevFit)) %>% 
   select(parameter, level, factor)
 
-```
-
-### Evaluation
-
-Calculate the predicted pure premium by $e^{\beta_0}e^{\beta_1x_1}e^{\beta_2x_2}...$. Here $\beta_0$ is the intercept, $\beta_1 \beta_2 \beta_3...$ are the estimate, and $\x_1 \x_2 \x_3...$ are the explanatory variables. 
-
-The predicted number is smaller than the real one. Because pure premium is missing in most of the records, the MAE is not a good check point of fitting quality.
-
-
-```{r}
-# send data to base R
-evaDF <- as.data.frame(test)
-
-# in modeling data set, convert factor to character
-evaDF <- evaDF %>%
-  mutate(veh_body = as.character(veh_body),
-         gender = as.character(gender),
-         area = as.character(area)
-           )
-
-# continuouse variables: attach the factor^x as the predicted PP
-for (var in c("veh_value", "veh_age", "agecat")) {
-  newVar <- paste0("rater_", var)
-  quoteVar <- rlang::sym(var)
-  
-  oneFactor <- factorDF %>% 
-    filter(parameter == var) %>% 
-    select(factor) %>% 
-    pull()
-  
-  evaDF <- evaDF %>% 
-    mutate(!!newVar := oneFactor^(!!quoteVar))
-}
-  
-# categorical veriables: attach the factor with the same level
-for (var in c("veh_body", "gender", "area")) {
-  newVar <- paste0("rater_", var)
-
-  oneFactor <- factorDF %>%
-    filter(parameter == var) %>% 
-    select(level, factor)
-
-  names(oneFactor) <- c(var, newVar)
-  
-  evaDF <- left_join(evaDF,
-                     oneFactor,
-                     by = var,
-                     all.x = T)
-  # the missing value is the base level, assign it as 1
-  evaDF[is.na(evaDF[[newVar]]), newVar] <- 1
-}
-
-# add the intercept
-intcpt <- factorDF %>%
-  filter(parameter == "freqIntercept" | parameter == "sevIntercept") %>% 
-  select(factor) 
-
-evaDF$rater_intecept <- intcpt[1,1] * intcpt[2,1]
-  
-# multiply the factors and intercept to get the prediced PP
-evaDF <- evaDF %>% 
-  mutate(
-      predict_PP = 
-      rater_veh_value *
-      rater_veh_age *
-      rater_veh_age *
-      rater_veh_body *
-      rater_gender *
-      rater_area *
-      rater_intecept
-  )
-
-evaluateModel(evaDF)
-```
-
-## GLM tweedie
-```{r}
-# modelDF <- modelDF[modelDF$numclaims != 0, ]
-fitPP <- h2o.glm(
-  y = "PP",
-  x = varModel,
-  # nfolds = 5,
-  training_frame = train,
-  family = 'tweedie',
-  tweedie_variance_power = 1.5
-)
-
-pred <- h2o.predict(fitPP, test)
-
-names(pred)[1] <- c("predict_PP")
-
-test$predict_PP <- NULL
-test <- h2o.cbind(test, pred$predict_PP)
-
-evaluateModel(test)
-
+factorDF
 ```
 
 
-
-## Random Forest
-```{r}
-# modelDF <- modelDF[modelDF$numclaims != 0, ]
-fitRF <- h2o.randomForest(
-  y = "PP",
-  x = varModel,
-  # nfolds = 5,
-  training_frame = train
-)
-
-pred <- h2o.predict(fitRF, test)
-
-names(pred)[1] <- c("predict_PP")
-
-test$predict_PP <- NULL
-test <- h2o.cbind(test, pred$predict_PP)
-
-evaluateModel(test)
-
-```
-
-## GBM
-
-```{r}
-# modelDF <- modelDF[modelDF$numclaims != 0, ]
-fitGBM <- h2o.gbm(
-  y = "PP",
-  x = varModel,
-  # nfolds = 5,
-  training_frame = train
-)
-
-pred <- h2o.predict(fitGBM, test)
-
-names(pred)[1] <- c("predict_PP")
-
-test$predict_PP <- NULL
-test <- h2o.cbind(test, pred$predict_PP)
-
-evaluateModel(test)
-
-```

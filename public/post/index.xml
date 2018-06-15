@@ -12,16 +12,12 @@
     
     
     <item>
-      <title>Insurance Rating Model using R</title>
-      <link>/2018/02/25/insurance-rating-model-using-r/</link>
+      <title>R &#43; H2O for Insurance Rating</title>
+      <link>/2018/02/25/r---h2o-for-insurance-rating/</link>
       <pubDate>Sun, 25 Feb 2018 00:00:00 +0000</pubDate>
       
-      <guid>/2018/02/25/insurance-rating-model-using-r/</guid>
-      <description>Data and MethodsGLMGLM tweedieRandom ForestGBMInsurance rating models predict risk, which is usually represented by pure premium; i.e., the incurred loss normalized by exposure, for example, the earned car year. GLM (Generalized Linear Model) is the most popular method mostly because the results are interpretable.
-GLM SAS, R, tweedie vs freq sev
-First, some funcions are defined for model evaluaton.
-details…
-library(tidyverse)summaryFactorGLM &amp;lt;- function(fitModles) {# Summarize the factors.</description>
+      <guid>/2018/02/25/r---h2o-for-insurance-rating/</guid>
+      <description>Data and Methods Modeling Output   Insurance rating models predict risk, which is usually represented by pure premium; i.e., the loss normalized by the covered time (exposure) \(\frac {loss}{exposure}\). GLM (Generalized Linear Model) is the major method using in industry. Insurance data are highly imbalanced. When the data are not credible enough, pure premium is predicted by frequency \(\frac {claimCount}{coveredTime}\) and severity \(\frac {loss}{claimCount}\), respectively, because the frequency is more credible.</description>
     </item>
     
     <item>
@@ -40,7 +36,7 @@ When the population mean, $\mu$, is estimated, it is more meaningful to use an i
       <pubDate>Sun, 11 Feb 2018 00:00:00 +0000</pubDate>
       
       <guid>/2018/02/11/know-more-about-the-place-you-live-using-census-data/</guid>
-      <description>Where the story is fromHow to get Census dataExplore the columbus areaWhere the story is fromUntil 2018 I have lived in Columbus Metropolitan area for more than ten years. How time flies! In these years I feel more and more vehicles on the road. No doubt this area is growing fast. However, almost all my quantitative understanding of Columbus is from Wiki…It is not bad, but what if I want to know more?</description>
+      <description>Where the story is from How to get Census data   Where the story is from Until 2018 I have lived in Columbus Metropolitan area for more than ten years. How time flies! In these years I feel more and more vehicles on the road. No doubt this area is growing fast. However, almost all my quantitative understanding of Columbus is from Wiki…It is not bad, but what if I want to know more?</description>
     </item>
     
     <item>

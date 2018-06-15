@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="generator" content="Hugo 0.40" />
+<meta name="generator" content="Hugo 0.30.2" />
 
 
 <title>Commenly-used Script - Jiang&#39;s Blog</title>
@@ -79,8 +79,7 @@
 </ul>
 </div>
 
-<p>I often use R, Python, SAS, SQL, and Bash in different
-tasks at the same time. To make the switch between different languages easier, I built a list of the commonly-used script for a quick reference.</p>
+<p>I often use R, Python, SAS, SQL, and Bash in different tasks at the same time. To make the switch between different languages easier, I built a list of the commonly-used script for a quick reference.</p>
 <p>A simulated sample data set with missing values and duplicated values was used.</p>
 <pre class="r"><code>set.seed(1)
 N &lt;- 1000
@@ -234,32 +233,32 @@ df %&gt;% replace(., is.na(.), 0)</code></pre>
 <pre><code>## # A tibble: 1,000 x 4
 ##    dimension1 dimension2 measure1 measure2
 ##    &lt;chr&gt;      &lt;chr&gt;         &lt;dbl&gt;    &lt;dbl&gt;
-##  1 I          B                9.       9.
-##  2 II         C               10.       5.
-##  3 II         B                9.       2.
-##  4 III        0                5.       4.
-##  5 0          A                0.       9.
-##  6 III        A                1.       0.
-##  7 III        B                6.       2.
-##  8 II         B                1.       4.
-##  9 II         C                6.       8.
-## 10 I          0                5.      10.
+##  1 I          B                 9        9
+##  2 II         C                10        5
+##  3 II         B                 9        2
+##  4 III        0                 5        4
+##  5 0          A                 0        9
+##  6 III        A                 1        0
+##  7 III        B                 6        2
+##  8 II         B                 1        4
+##  9 II         C                 6        8
+## 10 I          0                 5       10
 ## # ... with 990 more rows</code></pre>
 <pre class="r"><code># fill missing by columns
 df %&gt;% replace_na(list(dimension1 = &quot;Unknown&quot;, measure1 = 0)) </code></pre>
 <pre><code>## # A tibble: 1,000 x 4
 ##    dimension1 dimension2 measure1 measure2
 ##    &lt;chr&gt;      &lt;chr&gt;         &lt;dbl&gt;    &lt;int&gt;
-##  1 I          B                9.        9
-##  2 II         C               10.        5
-##  3 II         B                9.        2
-##  4 III        &lt;NA&gt;             5.        4
-##  5 Unknown    A                0.        9
-##  6 III        A                1.       NA
-##  7 III        B                6.        2
-##  8 II         B                1.        4
-##  9 II         C                6.        8
-## 10 I          &lt;NA&gt;             5.       10
+##  1 I          B                 9        9
+##  2 II         C                10        5
+##  3 II         B                 9        2
+##  4 III        &lt;NA&gt;              5        4
+##  5 Unknown    A                 0        9
+##  6 III        A                 1       NA
+##  7 III        B                 6        2
+##  8 II         B                 1        4
+##  9 II         C                 6        8
+## 10 I          &lt;NA&gt;              5       10
 ## # ... with 990 more rows</code></pre>
 </div>
 <div id="python-1" class="section level3">
@@ -373,7 +372,6 @@ df %&gt;%
   mutate(
     ratio_relativity = ratio/(sum(measure1)/sum(measure2))
   )</code></pre>
-<pre><code>## Warning: package &#39;bindrcpp&#39; was built under R version 3.4.4</code></pre>
 <pre><code>## # A tibble: 4 x 7
 ##   dimension1 measure1 measure2 count measure1_percent ratio
 ##   &lt;chr&gt;         &lt;int&gt;    &lt;int&gt; &lt;int&gt;            &lt;dbl&gt; &lt;dbl&gt;

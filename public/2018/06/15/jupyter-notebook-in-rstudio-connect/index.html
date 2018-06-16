@@ -6,8 +6,8 @@
 <meta name="generator" content="Hugo 0.30.2" />
 
 
-<title>Jiang Li - Jiang&#39;s Blog</title>
-<meta property="og:title" content="Jiang Li - Jiang&#39;s Blog">
+<title>Jupyter Notebook in RStudio Connect - Jiang&#39;s Blog</title>
+<meta property="og:title" content="Jupyter Notebook in RStudio Connect - Jiang&#39;s Blog">
 
 
 
@@ -52,19 +52,24 @@
 
   <article class="article">
     
+    <span class="article-duration">1 min read</span>
+    
 
-    <h1 class="article-title">Jiang Li</h1>
+    <h1 class="article-title">Jupyter Notebook in RStudio Connect</h1>
 
+    
+    <span class="article-date">2018/06/15</span>
     
 
     <div class="article-content">
-      <p>I am a R&amp;D analyst using R/Python/SAS, a Ph.D. in physics, an enthusiastic volunteer teaching math, and a proud dad of three amazing kids.</p>
-
-<ul>
-<li>Email: jiangliemail at gmail dot com</li>
-<li>Twitter: <a href="https://twitter.com/Jiang_Li1">@Jiang_Li1</a></li>
-<li><a href="https://www.linkedin.com/in/jiang-li-17429558/">LinkedIn</a></li>
-</ul>
+      <p>The <a href="https://www.rstudio.com/products/connect/">RStudio Connect</a> is a handy tool to publish a report online and share with the team. Usually, the Markdown, R Markdown, or R Notebook documents can be easily previewed and published in RStudio. However, what if I want to publish a report composed by Jupyter Notebook?</p>
+<p>The idea is to convert the Jupyter Notebook to Markdown. Here is how:</p>
+<ol style="list-style-type: decimal">
+<li>Given a sample.ipynb, convert it to markdown file by: <code>jupyter nbconvert --to markdown sample.ipynb</code></li>
+<li>Remove the leading spaces by <code>sed &quot;s/^[ \t]*//&quot; -i sample.md</code></li>
+<li>Load the markdown fine in RStudio, Preview, and publish it.</li>
+</ol>
+<p>That’s it!</p>
 
     </div>
   </article>
@@ -89,6 +94,9 @@
     
 
     
+<script src="/js/math-code.js"></script>
+<script async src="//cdn.bootcss.com/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
 
     
   </body>

@@ -3,7 +3,12 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>/2018/06/15/jupyter-notebook-in-rstudio/</loc>
+    <loc>/2018/06/15/jupyter-notebook-in-rstudio-connect/</loc>
+    <lastmod>2018-06-15T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/2018/06/15/workflow-of-building-r-package/</loc>
     <lastmod>2018-06-15T00:00:00+00:00</lastmod>
   </url>
   

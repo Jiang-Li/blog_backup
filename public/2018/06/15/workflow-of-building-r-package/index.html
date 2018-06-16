@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Hugo 0.30.2" />
+
+
+<title>Workflow of Building R Package - Jiang&#39;s Blog</title>
+<meta property="og:title" content="Workflow of Building R Package - Jiang&#39;s Blog">
+
+
+
+  
+
+
+
+
+
+
+
+
+<link href='//cdn.bootcss.com/highlight.js/9.11.0/styles/github.min.css' rel='stylesheet' type='text/css' />
+
+
+
+<link rel="stylesheet" href="/css/fonts.css" media="all">
+<link rel="stylesheet" href="/css/main.css" media="all">
+
+
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav">
+  <a href="/" class="nav-logo">
+    <img src="/images/logo.png"
+         width="50"
+         height="50"
+         alt="Logo">
+  </a>
+
+  <ul class="nav-links">
+    
+    <li><a href="/about/">About</a></li>
+    
+    <li><a href="/post/">Blog</a></li>
+    
+  </ul>
+</nav>
+
+      </header>
+
+
+<main class="content" role="main">
+
+  <article class="article">
+    
+    <span class="article-duration">1 min read</span>
+    
+
+    <h1 class="article-title">Workflow of Building R Package</h1>
+
+    
+    <span class="article-date">2018/06/15</span>
+    
+
+    <div class="article-content">
+      <p>Thanks to RStudio and the <em>usethis</em> and <em>ROxygen</em> packages, the building of a R package is much convenient. Here is a typical workflow:</p>
+<ol style="list-style-type: decimal">
+<li><p>Initialize the project of package</p>
+<pre><code>usethis::create_package(&quot;...&quot;)</code></pre></li>
+<li>Modify the description</li>
+<li>Copy and save R code in the /R folder</li>
+<li>Build -&gt; Load All</li>
+<li><p>Remove the library(…) in the code, and add the packages by</p>
+<pre><code>usethis::use_package(&quot;...&quot;)</code></pre></li>
+<li>Build -&gt; Check</li>
+<li>Write help for each function: Code -&gt; Insert ROxygen Skeleton</li>
+<li><p>Assign the other packages’ functions using in the code</p>
+<pre><code>  @importFrom package function1, function2...</code></pre></li>
+<li>Build -&gt; Documents</li>
+<li>usethis::use_readme_md()</li>
+<li><p>Build -&gt; build binary</p></li>
+</ol>
+<p>Done!</p>
+
+    </div>
+  </article>
+
+  
+
+
+</main>
+
+      <footer class="footer">
+        <ul class="footer-links">
+          <li>
+            <a href="/index.xml" type="application/rss+xml" target="_blank">RSS feed</a>
+          </li>
+          <li>
+            <a href="https://gohugo.io/" class="footer-links-kudos">Made with <img src="/images/hugo-logo.png" width="22" height="22"></a>
+          </li>
+        </ul>
+      </footer>
+
+    </div>
+    
+
+
+
+<script src="//cdn.bootcss.com/highlight.js/9.11.0/highlight.min.js"></script>
+
+
+
+<script src="//cdn.bootcss.com/highlight.js/9.11.0/languages/r.min.js"></script>
+<script src="//cdn.bootcss.com/highlight.js/9.11.0/languages/yaml.min.js"></script>
+<script>hljs.configure({languages: []}); hljs.initHighlightingOnLoad();</script>
+
+
+
+    
+
+    
+  </body>
+</html>
+

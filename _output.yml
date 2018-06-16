@@ -3,3 +3,4 @@ blogdown::html_page:
   toc_depth: 2
   fig_width: 6
   dev: "svg"
+

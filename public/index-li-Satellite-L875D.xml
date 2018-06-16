@@ -1,68 +1,0 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title>Jiang&#39;s Blog</title>
-    <link>/</link>
-    <description>Recent content on Jiang&#39;s Blog</description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language>
-    <lastBuildDate>Sun, 25 Feb 2018 00:00:00 +0000</lastBuildDate>
-    
-	<atom:link href="/index.xml" rel="self" type="application/rss+xml" />
-    
-    
-    <item>
-      <title>Insurance Rating Model using R</title>
-      <link>/2018/02/25/insurance-rating-model-using-r/</link>
-      <pubDate>Sun, 25 Feb 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/2018/02/25/insurance-rating-model-using-r/</guid>
-      <description>Data and MethodsGLMGLM tweedieRandom ForestGBMInsurance rating models predict risk, which is usually represented by pure premium; i.e., the incurred loss normalized by exposure, for example, the earned car year. GLM (Generalized Linear Model) is the most popular method mostly because the results are interpretable.
-GLM SAS, R, tweedie vs freq sev
-First, some funcions are defined for model evaluaton.
-details…
-library(tidyverse)summaryFactorGLM &amp;lt;- function(fitModles) {# Summarize the factors.</description>
-    </item>
-    
-    <item>
-      <title>MOE for ACS Estimate</title>
-      <link>/2018/02/18/moe-for-acs-estimate/</link>
-      <pubDate>Sun, 18 Feb 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/2018/02/18/moe-for-acs-estimate/</guid>
-      <description>There is a moe column in the census data pulled using the tidycensus. After doing a mini research on it, I learned that actually this variable is the 90% confidence interval for the population mean. Yihui said “Listen / read / talk and forget; write and remember!”, so I guess it it better to write down something quickly before I forgot it.
-When the population mean, $\mu$, is estimated, it is more meaningful to use an interval that represents the probable range.</description>
-    </item>
-    
-    <item>
-      <title>Know More about the Place You Live Using Census Data</title>
-      <link>/2018/02/11/know-more-about-the-place-you-live-using-census-data/</link>
-      <pubDate>Sun, 11 Feb 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/2018/02/11/know-more-about-the-place-you-live-using-census-data/</guid>
-      <description>Where the story is fromHow to get Census dataExplore the columbus areaWhere the story is fromUntil 2018 I have lived in Columbus Metropolitan area for more than ten years. How time flies! In these years I feel more and more vehicles on the road. No doubt this area is growing fast. However, almost all my quantitative understanding of Columbus is from Wiki…It is not bad, but what if I want to know more?</description>
-    </item>
-    
-    <item>
-      <title>Commenly-used Script</title>
-      <link>/2018/02/06/commenly-used-script/</link>
-      <pubDate>Tue, 06 Feb 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/2018/02/06/commenly-used-script/</guid>
-      <description>Row and Column Missing Values Unique Level Count Summary Merge Reshape   I often use R, Python, SAS, SQL, and Bash in different tasks at the same time. To make the switch between different languages easier, I built a list of the commonly-used script for a quick reference.
-A simulated sample data set with missing values and duplicated values was used.
-set.seed(1) N &amp;lt;- 1000 df &amp;lt;- tibble( dimension1 = sample(c(&amp;quot;I&amp;quot;, &amp;quot;II&amp;quot;, &amp;quot;III&amp;quot;), N, replace = T), dimension2 = sample(c(&amp;quot;A&amp;quot;, &amp;quot;B&amp;quot;, &amp;quot;C&amp;quot;), N, replace = T), measure1 = sample(1:10, N, replace = T), measure2 = sample(1:10, N, replace = T) ) df &amp;lt;- as_tibble(lapply(df, function(r) r[sample(c(TRUE, NA), prob = c(0.</description>
-    </item>
-    
-    <item>
-      <title>Jiang Li</title>
-      <link>/about/</link>
-      <pubDate>Tue, 06 Feb 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/about/</guid>
-      <description>I am a R&amp;amp;D analyst using R/Python/SAS, a Ph.D. in physics, an enthusiastic volunteer teaching math, and a proud dad of three amazing kids.
- Email: jiangliemail at gmail dot com Twitter: @Jiang_Li1 LinkedIn  </description>
-    </item>
-    
-  </channel>
-</rss>

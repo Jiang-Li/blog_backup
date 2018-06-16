@@ -1,10 +1,10 @@
 ---
-title: Jupyter Notebook in RStudio
+title: Jupyter Notebook in RStudio Connect
 author: ''
 date: '2018-06-15'
 ---
 
-The [RStudio Connect](https://www.rstudio.com/products/connect/) is a handy tool to publish a report online and share with the team. Usually, the Markdown, R Makedowan, or R Notebook docuemnts can be easily previewed and published in RStudio. However, what if I want to publish a report composed by Jupyter Notebook?
+The [RStudio Connect](https://www.rstudio.com/products/connect/) is a handy tool to publish a report online and share with the team. Usually, the Markdown, R Markdown, or R Notebook documents can be easily previewed and published in RStudio. However, what if I want to publish a report composed by Jupyter Notebook?
 
 The idea is to convert the Jupyter Notebook to Markdown. Here is how:
 
